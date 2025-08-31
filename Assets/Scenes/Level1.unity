@@ -1569,7 +1569,7 @@ GameObject:
   - component: {fileID: 713336714}
   - component: {fileID: 713336717}
   - component: {fileID: 713336718}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ball
   m_TagString: Ball
   m_Icon: {fileID: 0}
@@ -1722,6 +1722,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 7
+  isPiercing: 0
 --- !u!1 &770510970
 GameObject:
   m_ObjectHideFlags: 0
@@ -4203,7 +4204,7 @@ GameObject:
   - component: {fileID: 1861012860}
   m_Layer: 0
   m_Name: GameOverTrigger
-  m_TagString: Untagged
+  m_TagString: Bottom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

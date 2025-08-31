@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
     public float speed = 7f;
     private Rigidbody2D rb;
     private bool isStopped = false;
+    public bool isPiercing = false;
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +63,19 @@ public class Ball : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isPiercing && collision.CompareTag("Block"))
+        {
+            var block = collision.GetComponent<BlockBase>();
+            if (block != null)
+            {
+                block.OnBallHit();
+            }
+        }
+    }
+
+
     public void StopBall()
     {
         isStopped = true;
@@ -71,4 +85,27 @@ public class Ball : MonoBehaviour
 
     }
 
+    public void IncreaseSpeed()
+    {
+        if (speed <= 15f) speed += 4f;
+        Invoke("DecreaseSpeed", 5f);
+    }
+
+    public void DecreaseSpeed()
+    {
+        speed -= 4f;
+    }
+
+    public void ActivatePierce()
+    {
+        isPiercing = true;
+        gameObject.layer = LayerMask.NameToLayer("PiercingBall");
+        Invoke("DeactivatePierce", 5f);
+    }
+
+    public void DeactivatePierce()
+    {
+        isPiercing = false;
+        gameObject.layer = LayerMask.NameToLayer("Ball");
+    }
 }
