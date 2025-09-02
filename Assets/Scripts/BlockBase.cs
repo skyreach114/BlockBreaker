@@ -19,7 +19,7 @@ public class BlockBase : MonoBehaviour
         effect.GetComponent<SoundFade>().PlayAndFadeOut();
         GameManager.instance.RemoveBlock();
 
-        if (Random.value < 0.35f) // 35%‚ÌŠm—¦
+        if (Random.value < 0.3f) // 30%‚ÌŠm—¦
         {
             GameObject item = Instantiate(itemPrefab, transform.position, Quaternion.identity);
 

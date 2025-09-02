@@ -9,10 +9,12 @@ public class GameManager : MonoBehaviour
 
     public GameObject clearEffectPrefab;
 
+    public TextMeshProUGUI startText;
     public TextMeshProUGUI clearText;
     public TextMeshProUGUI gameOverText;
     public GameObject ball;
     public GameObject retryButton;
+    public GameObject titleButton;
     public AudioSource clearSound;
     private int blockCount;
     private bool isGameOver = false;
@@ -28,6 +30,13 @@ public class GameManager : MonoBehaviour
         clearText.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(false);
         retryButton.SetActive(false);
+        titleButton.SetActive(false);
+        Invoke("EraseTitleText", 1.3f);
+    }
+
+    void EraseTitleText()
+    {
+        startText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -48,7 +57,7 @@ public class GameManager : MonoBehaviour
     {
         blockCount--;
 
-        if(blockCount == 0)
+        if (blockCount == 0)
         {
             StageClear();
         }
@@ -59,24 +68,29 @@ public class GameManager : MonoBehaviour
         clearText.gameObject.SetActive(true);
         Instantiate(clearEffectPrefab, Vector3.zero, Quaternion.identity);
         retryButton.SetActive(true);
+        titleButton.SetActive(true);
         isGameOver = true;
         clearSound.Play();
 
         ball.GetComponent<Ball>().StopBall();
-        
-        
+
+
     }
     public void GameOver()
     {
         gameOverText.gameObject.SetActive(true);
         retryButton.SetActive(true);
+        titleButton.SetActive(true);
         isGameOver = true;
-
-        Invoke("Retry", 5f);
     }
 
     public void Retry()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void BackToTitle()
+    {
+        SceneManager.LoadScene("TitleScene");
     }
 }

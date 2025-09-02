@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    public float speed = 7f;
+    public float speed = 7.5f;
     private Rigidbody2D rb;
     private bool isStopped = false;
     public bool isPiercing = false;
@@ -13,10 +13,19 @@ public class Ball : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        isStopped = true;
+        Invoke("BallSetting", 1.5f);
+
+    }
+
+    void BallSetting()
+    {
         float angle = Random.Range(-20f, -160f);
         Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
         rb.linearVelocity = dir.normalized * speed;
+        isStopped = false;
     }
+
     void FixedUpdate()
     {
         if (isStopped) return;
@@ -24,14 +33,14 @@ public class Ball : MonoBehaviour
         rb.linearVelocity = rb.linearVelocity.normalized * speed;
         Vector2 v = rb.linearVelocity;
 
-        if (Mathf.Abs(v.x) < 0.2f)
+        if (Mathf.Abs(v.x) < 0.4f)
         {
-            v = new Vector2(Mathf.Sign(v.x) * 0.28f, v.y);
+            v = new Vector2(Mathf.Sign(v.x) * 0.4f, v.y);
         }
 
-        if (Mathf.Abs(v.y) < 0.2f)
+        if (Mathf.Abs(v.y) < 0.4f)
         {
-            v = new Vector2(v.x, Mathf.Sign(v.y) * 0.28f);
+            v = new Vector2(v.x, Mathf.Sign(v.y) * 0.4f);
         }
 
         rb.linearVelocity = v.normalized * speed;
@@ -80,27 +89,24 @@ public class Ball : MonoBehaviour
     {
         isStopped = true;
         rb.linearVelocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-        rb.bodyType = RigidbodyType2D.Kinematic;
-
     }
 
     public void IncreaseSpeed()
     {
-        if (speed <= 15f) speed += 4f;
+        if (speed <= 15.5f) speed += 4f;
         Invoke("DecreaseSpeed", 5f);
     }
 
     public void DecreaseSpeed()
     {
-        speed -= 4f;
+        if (speed >= 11.5f)speed -= 4f;
     }
 
     public void ActivatePierce()
     {
         isPiercing = true;
         gameObject.layer = LayerMask.NameToLayer("PiercingBall");
-        Invoke("DeactivatePierce", 5f);
+        Invoke("DeactivatePierce", 3f);
     }
 
     public void DeactivatePierce()
