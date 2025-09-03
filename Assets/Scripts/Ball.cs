@@ -33,14 +33,14 @@ public class Ball : MonoBehaviour
         rb.linearVelocity = rb.linearVelocity.normalized * speed;
         Vector2 v = rb.linearVelocity;
 
-        if (Mathf.Abs(v.x) < 0.4f)
+        if (Mathf.Abs(v.x) < 2.5f)
         {
-            v = new Vector2(Mathf.Sign(v.x) * 0.4f, v.y);
+            v = new Vector2(v.x * 2f, v.y);
         }
 
-        if (Mathf.Abs(v.y) < 0.4f)
+        if (Mathf.Abs(v.y) < 2.5f)
         {
-            v = new Vector2(v.x, Mathf.Sign(v.y) * 0.4f);
+            v = new Vector2(v.x, v.y * 2f);
         }
 
         rb.linearVelocity = v.normalized * speed;

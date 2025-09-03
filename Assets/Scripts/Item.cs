@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
+    private bool isStopped = false;
+
     public enum ItemType { SpeedUp, Pierce }
     public ItemType type;
 
@@ -26,7 +28,21 @@ public class Item : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector2.down * 3f * Time.deltaTime);
+        // クリアかゲームオーバーなら止める
+        if (GameManager.instance.isCleared || GameManager.instance.isGameOver)
+        {
+            isStopped = true;
+        }
+
+        if (!isStopped)
+        {
+            transform.Translate(Vector2.down * 3f * Time.deltaTime);
+        }
+    }
+
+    public void StopItem()
+    {
+        isStopped = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

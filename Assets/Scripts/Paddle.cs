@@ -5,12 +5,17 @@ using UnityEngine.InputSystem;
 
 public class Paddle : MonoBehaviour
 {
-    public float speed = 10f;
+    public float speed = 11.5f;
     private Vector2 moveInput;
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.instance.isCleared || GameManager.instance.isGameOver)
+        {
+            return;
+        }
+
         // タッチやクリックがある場合は優先
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
         {
