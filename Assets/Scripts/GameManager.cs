@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
             {
                 playfab.SetDisplayName(playerName);
             }
-            playfab.SendScore(bestTimes[0]);
+            playfab.SendScore(clearTime);
         }
         sendCompletedText.color = new Color32(255, 255, 255, 255);
         StartCoroutine("FadeOut");

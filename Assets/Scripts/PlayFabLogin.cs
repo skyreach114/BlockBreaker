@@ -6,12 +6,25 @@ public class PlayFabLogin : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
 
+    private string customId;
+
     void Start()
     {
+
+        // WebGL対応：PlayerPrefsに保存して固定IDを使用
+        if (PlayerPrefs.HasKey("CustomID"))
+        {
+            customId = PlayerPrefs.GetString("CustomID");
+        }
+        else
+        {
+            customId = System.Guid.NewGuid().ToString();
+            PlayerPrefs.SetString("CustomID", customId);
+        }
+
         var request = new LoginWithCustomIDRequest
         {
-            //CustomId = System.Guid.NewGuid().ToString(), // 毎回新規ID
-            CustomId = SystemInfo.deviceUniqueIdentifier, // デバイスごとに固有ID
+            CustomId = customId,
             CreateAccount = true
         };
         PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
