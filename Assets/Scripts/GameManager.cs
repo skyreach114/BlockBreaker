@@ -4,12 +4,16 @@ using TMPro;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+using PlayFab.ClientModels;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
     private float startTime;
+    private float clearTime;
     private bool isTiming = false;
     private int blockCount;
     public bool isGameOver = false;
@@ -19,50 +23,53 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI startText;
     public TextMeshProUGUI clearText;
     public TextMeshProUGUI gameOverText;
-    public TextMeshProUGUI timerText; 
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI resultTimeText;
     public TextMeshProUGUI topTimesText;
+    public TextMeshProUGUI sendText;
+    public TextMeshProUGUI sendCompletedText;
+
+    public TMP_InputField nameInputField;
 
     public GameObject ball;
     public GameObject retryButton;
     public GameObject titleButton;
+    public GameObject sendButton;
+    public GameObject rankingButton;
     public GameObject clearEffectPrefab;
+    public GameObject rankingPanel;
+    public GameObject corkBoard;
 
     public AudioSource clearSound;
 
+    private PlayFabLogin playfab;
+
     private static List<float> bestTimes = new List<float>();
+
+    [Header("ランキングUI")]
+    public Transform rankingContent;     // ScrollViewのContent
+    public GameObject rowPrefab;         // 1行のプレハブ
 
     private void Awake()
     {
         instance = this;
     }
 
-    private void UpdateTopTimesUI()
-    {
-        if (bestTimes.Count == 0)
-        {
-            //topTimesText.gameObject.SetActive(false);
-            return;
-        }
-
-        // TOP3表示
-        string display = "Best Time\n";
-        for (int i = 0; i < bestTimes.Count; i++)
-        {
-            display += (i + 1) + ". " + bestTimes[i].ToString("F2") + " s\n";
-        }
-        topTimesText.text = display;
-        topTimesText.gameObject.SetActive(true);
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playfab = FindFirstObjectByType<PlayFabLogin>();
+
         clearText.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(false);
         retryButton.SetActive(false);
         titleButton.SetActive(false);
+        sendButton.SetActive(false);
+        rankingButton.SetActive(false);
         resultTimeText.gameObject.SetActive(false);
+        sendText.gameObject.SetActive(false);
+        nameInputField.gameObject.SetActive(false);
+        rankingPanel.SetActive(false);
+        corkBoard.SetActive(false);
 
         if (hasCleared)
         {
@@ -84,17 +91,21 @@ public class GameManager : MonoBehaviour
         isTiming = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isTiming)
         {
-            float t = Time.time - startTime;
-            timerText.text = t.ToString("F2") + " s";
+            clearTime = Time.time - startTime;
+            timerText.text = clearTime.ToString("F2") + " s";
         }
 
         if (isGameOver && Keyboard.current.rKey.wasPressedThisFrame)
         {
+            if (EventSystem.current.currentSelectedGameObject == nameInputField.gameObject)
+            {
+                return;
+            }
+
             Retry();
         }
     }
@@ -114,20 +125,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateTopTimesUI()
+    {
+        if (bestTimes.Count == 0) return;
+
+        // TOP3表示
+        string display = "Best Time\n";
+        for (int i = 0; i < bestTimes.Count; i++)
+        {
+            display += (i + 1) + ". " + bestTimes[i].ToString("F2") + " s\n";
+        }
+        topTimesText.text = display;
+        topTimesText.gameObject.SetActive(true);
+    }
+
     private void StageClear()
     {
         hasCleared = true;
         isCleared = true;
         isTiming = false;
 
-        float finalTime = Time.time - startTime;
-        resultTimeText.text = "Time : " + finalTime.ToString("F2") + " s";
+        resultTimeText.text = "Time : " + clearTime.ToString("F2") + " s";
         resultTimeText.gameObject.SetActive(true);
 
         // タイム保存＆ソート
-        bestTimes.Add(finalTime);
+        bestTimes.Add(clearTime);
         bestTimes = bestTimes.OrderBy(t => t).Take(3).ToList();
-
         UpdateTopTimesUI();
 
         ball.GetComponent<Ball>().StopBall();
@@ -136,8 +159,74 @@ public class GameManager : MonoBehaviour
         Instantiate(clearEffectPrefab, Vector3.zero, Quaternion.identity);
         retryButton.SetActive(true);
         titleButton.SetActive(true);
+        rankingButton.SetActive(true);
+        
         isGameOver = true;
-        clearSound.Play();
+        clearSound.Play();;
+    }
+
+    public void OnSendButtonClicked()
+    {
+        if (playfab != null)
+        {
+            string playerName = nameInputField.text;
+
+            if (!string.IsNullOrEmpty(playerName))
+            {
+                playfab.SetDisplayName(playerName);
+            }
+            playfab.SendScore(bestTimes[0]);
+        }
+        sendCompletedText.color = new Color32(255, 255, 255, 255);
+        StartCoroutine("FadeOut");
+    }
+
+    IEnumerator FadeOut()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 255; i++)
+            {
+                sendCompletedText.color = sendCompletedText.color - new Color32(0, 0, 0, 1);
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+    }
+
+    public void OnRankingButtonClicked()
+    {
+        sendButton.SetActive(true);
+        sendText.gameObject.SetActive(true);
+        nameInputField.gameObject.SetActive(true);
+        rankingPanel.SetActive(true);
+        corkBoard.SetActive(true);
+
+        if (playfab != null)
+        {
+            playfab.GetLeaderboard();
+        }
+    }
+
+    public void ShowLeaderboard(List<PlayerLeaderboardEntry> entries)
+    {
+        // 古い行を削除
+        foreach (Transform child in rankingContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 新しい行を追加
+        foreach (var entry in entries)
+        {
+            GameObject row = Instantiate(rowPrefab, rankingContent);
+            TMP_Text[] texts = row.GetComponentsInChildren<TMP_Text>();
+
+            float realTime = 9999f - (entry.StatValue / 100f);
+
+            texts[0].text = $"{entry.Position + 1}位"; // 順位
+            texts[1].text = string.IsNullOrEmpty(entry.DisplayName) ? "名無し" : entry.DisplayName; // 名前
+            texts[2].text = $"{realTime:F2} s"; // タイム
+        }
     }
     public void GameOver()
     {
