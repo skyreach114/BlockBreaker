@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public GameObject titleButton;
     public GameObject sendButton;
     public GameObject rankingButton;
+    public GameObject rankingReroadButton;
     public GameObject clearEffectPrefab;
     public GameObject rankingPanel;
     public GameObject corkBoard;
@@ -65,6 +66,7 @@ public class GameManager : MonoBehaviour
         titleButton.SetActive(false);
         sendButton.SetActive(false);
         rankingButton.SetActive(false);
+        rankingReroadButton.SetActive(false);
         resultTimeText.gameObject.SetActive(false);
         sendText.gameObject.SetActive(false);
         nameInputField.gameObject.SetActive(false);
@@ -197,6 +199,7 @@ public class GameManager : MonoBehaviour
     {
         sendButton.SetActive(true);
         sendText.gameObject.SetActive(true);
+        rankingReroadButton.SetActive(true);
         nameInputField.gameObject.SetActive(true);
         rankingPanel.SetActive(true);
         corkBoard.SetActive(true);
