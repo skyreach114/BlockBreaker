@@ -1,7 +1,6 @@
 # Block Breaker
 Unity 2D で制作したブロック崩しです。  
-クリアすると自作のオリジナルイラストが見られます。  
-また、クリアタイムをTOP3まで表示出来ます。
+クリアすると自作のオリジナルイラストが見られるほか、ランキングも確認出来ます。
 
 
 ## 遊び方
@@ -23,9 +22,10 @@ Unity 2D で制作したブロック崩しです。
 
 
 ## 画面イメージ
- ![ゲーム画面](https://github.com/user-attachments/assets/52671912-b0a1-4b67-9202-1afa18da2802)
+ ![ゲーム画面](https://github.com/user-attachments/assets/dcca6d13-f103-44a6-bb31-08c593001a5f)
 
 
 ## 開発環境
 - Unity 6
 - C#
+- PlayFab（ランキング機能）
