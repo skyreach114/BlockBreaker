@@ -22,7 +22,7 @@ Unity 2D で制作したブロック崩しです。
 
 
 ## 画面イメージ
- ![ゲーム画面](https://github.com/user-attachments/assets/52671912-b0a1-4b67-9202-1afa18da2802)
+ ![ゲーム画面](https://github.com/user-attachments/assets/dcca6d13-f103-44a6-bb31-08c593001a5f)
 
 
 ## 開発環境
