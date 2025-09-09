@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayFabLogin : MonoBehaviour
 {
-    [SerializeField] private GameManager gameManager;
+    [SerializeField] private RankingManager rankingManager;
 
     private string customId;
 
@@ -73,7 +73,7 @@ public class PlayFabLogin : MonoBehaviour
             result =>
             {
                 Debug.Log("ランキング取得成功");
-                gameManager.ShowLeaderboard(result.Leaderboard); // GameManagerに表示を依頼
+                rankingManager.ShowRanking(result.Leaderboard);
             },
             error => Debug.LogError("ランキング取得失敗: " + error.GenerateErrorReport()));
     }

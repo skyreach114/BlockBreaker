@@ -11,13 +11,16 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public RankingManager rankingManager;
 
     private float startTime;
     private float clearTime;
-    private bool isTiming = false;
     private int blockCount;
+
+    private bool isTiming = false;
     public bool isGameOver = false;
     public bool isCleared = false;
+    private bool isRankingClicked = false;
     private static bool hasCleared = false;
 
     public TextMeshProUGUI startText;
@@ -28,6 +31,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI topTimesText;
     public TextMeshProUGUI sendText;
     public TextMeshProUGUI sendCompletedText;
+    public TextMeshProUGUI registerText;
 
     public TMP_InputField nameInputField;
 
@@ -62,6 +66,7 @@ public class GameManager : MonoBehaviour
 
         clearText.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(false);
+        registerText.gameObject.SetActive(false);
         retryButton.SetActive(false);
         titleButton.SetActive(false);
         sendButton.SetActive(false);
@@ -158,6 +163,7 @@ public class GameManager : MonoBehaviour
         ball.GetComponent<Ball>().StopBall();
 
         clearText.gameObject.SetActive(true);
+        registerText.gameObject.SetActive(true);
         Instantiate(clearEffectPrefab, Vector3.zero, Quaternion.identity);
         retryButton.SetActive(true);
         titleButton.SetActive(true);
@@ -197,13 +203,33 @@ public class GameManager : MonoBehaviour
 
     public void OnRankingButtonClicked()
     {
+        if (isRankingClicked)
+        {
+            isRankingClicked = false;
+            sendButton.SetActive(false);
+            sendText.gameObject.SetActive(false);
+            rankingReroadButton.SetActive(false);
+            nameInputField.gameObject.SetActive(false);
+            rankingManager.HideRanking();
+
+            return;
+        }
+
+        isRankingClicked = true;
+
+        if (playfab != null)
+        {
+            playfab.GetLeaderboard();
+        }
+
         sendButton.SetActive(true);
         sendText.gameObject.SetActive(true);
         rankingReroadButton.SetActive(true);
         nameInputField.gameObject.SetActive(true);
-        rankingPanel.SetActive(true);
-        corkBoard.SetActive(true);
+    }
 
+    public void OnReroardButtonClicked()
+    {
         if (playfab != null)
         {
             playfab.GetLeaderboard();
